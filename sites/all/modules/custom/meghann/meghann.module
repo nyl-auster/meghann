@@ -1,0 +1,86 @@
+<?php
+
+/**
+ * Implements hook_init()
+ */
+function meghann_init() {
+  // importation des fichiers css et js pour le slider "slick"
+  drupal_add_css('sites/all/libraries/slick/slick/slick.css');
+  drupal_add_css('sites/all/libraries/slick/slick/slick-theme.css');
+  drupal_add_js('sites/all/libraries/slick/slick/slick.min.js');
+}
+
+/**
+ * Retourne tous les nids des nodes slides associé au slider avec le
+ * nid passé en paramètre
+ * @param $nid : nid du slider dont on veut retrouver les slides
+ */
+function get_slides_from_slider($nid) {
+
+  $query = db_select('node', 'n');
+  $query->addField('n', 'nid');
+  $query->join('field_data_field_slider', 'field_data_field_slider', 'n.nid=entity_id');
+  //$query->addTag('node_access');
+  //$query->condition('status', 1);
+  $query->condition('type', 'slide');
+  if ($nid) {
+    $query->condition('field_data_field_slider.field_slider_target_id', $nid);
+  }
+  //$query->orderBy('created', 'DESC');
+  //$query->groupBy('n.nid');
+  $result = $query->execute();
+  $nids = array();
+  foreach ($result as $row) {
+    $nids[] = $row->nid;
+  }
+  return $nids;
+}
+
+/**
+ * Implements hook_block_info()
+ * Declares block to Drupal
+ */
+function meghann_block_info() {
+  return array(
+    'slider_homepage' => array(
+      'info' => t('Slider homepage'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_block_view();
+ * Define what a block defined in hook_block_info has to display
+ */
+function meghann_block_view($delta) {
+
+  $block = array();
+
+  if ($delta == 'slider_homepage') {
+    // appelle de notre classe métier pour générer le contenu d'un bloc
+    $block['subject'] = t('Slider homepage');
+    // #theme is the template to used for rendering.
+    // #slides and others keys will be arguments passed to the theme function.
+    // @see hook_theme
+    $block['content'] = array(
+      '#theme' => 'slider_homepage',
+      '#slides' => node_load_multiple(get_slides_from_slider(4)),
+    );
+  }
+
+  return $block;
+}
+
+/**
+ * Implements hook_theme().
+ *
+ * Declare templates to Drupal.
+ */
+function meghann_theme() {
+  return array(
+    'slider_homepage' => array(
+      'variables' => array('slides' => array()),
+      'template' => 'templates/slider_homepage',
+    ),
+  );
+}

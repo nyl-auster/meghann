@@ -1,0 +1,23 @@
+name = meghann
+description = a subtheme of okcdesign
+base theme = okcdesign
+engine = phptemplate
+core = 7.x
+
+regions[header] = Entête
+regions[header__row_1] = Header row 1
+regions[header__row_2] = Header row 2
+regions[header__row_3] = Header row 3
+regions[content_top__row_1] = Content top row 1
+regions[content_top__row_2] = Content top row 2
+regions[content_top__row_3] = Content top row 3
+regions[content] = Contenu
+regions[sidebar_first] = Première barre latérale
+regions[sidebar_second] = Seconde barre latérale
+regions[content_bottom__row_1] = Content bottom row 1
+regions[content_bottom__row_2] = Content bottom row 2
+regions[content_bottom__row_3] = Content bottom row 3
+regions[footer] = Pied de page
+regions[footer__row_1] = Footer row 1
+regions[footer__row_2] = Footer row 2
+regions[footer__row_3] = Footer row 3
