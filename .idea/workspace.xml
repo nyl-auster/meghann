@@ -70,10 +70,19 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="_style.scss" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="_style.scss" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/sites/all/themes/meghann/scss/_style.scss">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="5" column="29" selection-start="60" selection-end="60" vertical-scroll-proportion="0.15254237" vertical-offset="0" max-vertical-offset="612">
+            <state line="5" column="29" selection-start="60" selection-end="60" vertical-scroll-proportion="-3.3333333" vertical-offset="0" max-vertical-offset="612">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="settings.php" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/sites/default/settings.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="599" column="30" selection-start="24718" selection-end="24718" vertical-scroll-proportion="0.78162915" vertical-offset="9431" max-vertical-offset="10008">
               <folding />
             </state>
           </provider>
@@ -181,6 +190,24 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="sites" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ferme" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ferme" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sites" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="default" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -497,7 +524,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/sites/all/themes/meghann/scss/_style.scss">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="29" selection-start="60" selection-end="60" vertical-scroll-proportion="0.15254237" vertical-offset="0" max-vertical-offset="612">
+        <state line="5" column="29" selection-start="60" selection-end="60" vertical-scroll-proportion="-3.3333333" vertical-offset="0" max-vertical-offset="612">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sites/default/settings.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="599" column="30" selection-start="24718" selection-end="24718" vertical-scroll-proportion="0.78162915" vertical-offset="9431" max-vertical-offset="10008">
           <folding />
         </state>
       </provider>
