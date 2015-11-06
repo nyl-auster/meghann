@@ -1,0 +1,29 @@
+
+
+#site-informations {
+
+  h1 {
+    text-transform: uppercase;
+  }
+
+}
+
+#main-menu {
+
+  margin-left: 0px;
+
+  li {
+
+    display: inline-block;
+    text-transform: uppercase;
+
+    a {
+      color:white;
+      padding: 10px;
+      background-color: yellowgreen;
+      border-radius: 5px;
+    }
+
+  }
+
+}
