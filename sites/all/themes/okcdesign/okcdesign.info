@@ -1,0 +1,38 @@
+name = OKC Design
+description = Responsive theme based on foundation css framework
+core = 7.x
+engine = phptemplate
+screenshot = screenshot.png
+
+; we create two types of regions :
+; - Regions suffixed by __row_xx are prepared to receive blocks
+;   containing grid classes such as "small-12 large-6 columns" provided
+;   to blocks by an additionnal module such as okclayout or block_class
+; - others regions are displayed on a grid by blocks will be full-width
+;   by default.
+regions[header] = Header
+regions[header__row_1] = Header row 1
+regions[header__row_2] = Header row 2
+regions[header__row_3] = Header row 3
+
+regions[content_top__row_1] = Content top row 1
+regions[content_top__row_2] = Content top row 2
+regions[content_top__row_3] = Content top row 3
+
+regions[content] = Content
+regions[sidebar_first] = Sidebar first
+regions[sidebar_second] = Sidebar second
+
+regions[content_bottom__row_1] = Content bottom row 1
+regions[content_bottom__row_2] = Content bottom row 2
+regions[content_bottom__row_3] = Content bottom row 3
+
+regions[footer] = Footer
+regions[footer__row_1] = Footer row 1
+regions[footer__row_2] = Footer row 2
+regions[footer__row_3] = Footer row 3
+
+; default enabled theme plugins
+settings[theme_plugin_foundation] = 1
+settings[theme_plugin_foundation_check_requirements] = 1
+settings[theme_plugin_dynamic_sidebars] = 1

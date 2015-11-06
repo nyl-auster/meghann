@@ -1,0 +1,7 @@
+*.html
+*GITOFF
+humans.txt
+robots.txt
+.sass-cache
+node_modules
+.bin
