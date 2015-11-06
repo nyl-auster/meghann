@@ -1,0 +1,45 @@
+<?php
+
+define('OKCLAYOUT_FIELD_NAME', 'okclayout_foundation_classes');
+
+/**
+ * Implements hook_schema_alter()
+ *
+ * @param $schema
+ */
+function okclayout_schema_alter(&$schema) {
+  $schema['block']['fields'][OKCLAYOUT_FIELD_NAME] = _okclayout_field_definition();
+}
+
+/**
+ * Implements hook_install()
+ */
+function okclayout_install() {
+  db_add_field('block', OKCLAYOUT_FIELD_NAME, _okclayout_field_definition());
+  // set a heavy weight
+  db_update('system')
+    ->fields(array('weight' => 999))
+    ->condition('name', 'okclayout', '=')
+    ->execute();
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function okclayout_uninstall() {
+  db_drop_field('block', OKCLAYOUT_FIELD_NAME);
+}
+
+/**
+ * responsive_class field definition.
+ * @return array
+ */
+function _okclayout_field_definition() {
+  return array(
+    'type' => 'varchar',
+    'length' => 255,
+    'not null' => TRUE,
+    'default' => '',
+    'description' => 'Zurb foundation classes.',
+  );
+}

@@ -1,0 +1,301 @@
+<?php
+/**
+ * @file
+ *
+ * Add a textarea in block configuration to set responsive classes
+ * for zurb foundation css framework. Use with okcdesign theme.
+ * @code
+ *   small-6 large-12 columns
+ * @endcode
+ *
+ * Additionnaly, you may use your theme info file to register your
+ * block grid informations, like this :
+ *
+ * okclayout_foundation_classes[block-15] = large-12 columns
+ * okclayout_foundation_classes[user-online] = large-1 columns
+ *
+ * Where "block-15" is "module-delta" and "large-12 columns" is foundation classes.
+ *
+ * If a block as classes in both info files and block configuration page, the block configuration
+ * page wins againts theme info file.
+ * Juste empty textarea to make theme info file active again for this block.
+ *
+ * Using themeinfo file is a nice way to version your grids layout; there is no easy
+ * way to deploy configuration saved in textarea.
+ *
+ * Note that blocks will have the same classes, on all pages.
+ * If you need to move blocks, you may create a layout :
+ *
+ * This module implements a "trick" to use Drupal as a layout system;
+ * using subthemes.
+ *
+ * Example :
+ * typing drush okc-layout "homepage" will create and enable an empty subtheme named
+ * {yourDefaultTheme}_layout_homepage, with same regions than your current default active theme.
+ *
+ * It will contains a hook_okclayout_conditions();this subtheme will became the
+ * active theme each time this function return TRUE.
+ */
+
+/**
+ * Implements hook_menu()
+ * @return array
+ */
+function okclayout_menu() {
+  $items = array();
+  $items['okclayout/autocomplete/foundation-classes'] = array(
+    'title' => 'Autocomplete for foundation classes',
+    'page callback' => '_okclayout_autocomplete_foundation_classes',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK
+  );
+  return $items;
+}
+
+/**
+ * Implements hook_custom_theme()
+ *
+ * Serve a different theme if a subtheme is a "layout" and
+ * its condition returns TRUE in current context.
+ */
+function okclayout_custom_theme() {
+  $layouts = okclayout_get_layouts(variable_get('theme_default'));
+
+  foreach ($layouts as $theme_name => $datas) {
+
+    // include template.php file if exists, so we can check if it implements
+    // hook_okclayout_condition(). If file template.php does not exists, abort.
+    $templatephp_file = str_replace($datas->name . '.info', 'template.php', $datas->filename);
+    if (!is_readable($templatephp_file)) continue;
+
+    include_once($templatephp_file);
+    $function = $theme_name. '_okclayout_condition';
+
+    // hook_okclayout_condition does not exists, abort.
+    if (!function_exists($function)) continue;
+
+    // if hook_okclayout_condition() return TRUE, set this subtheme as
+    // the current active theme for this page.
+    $result = $function();
+    if ($result) {
+      return $theme_name;
+    }
+
+  }
+
+}
+
+/**
+ * Implements hook_block_info()
+ * @return mixed
+ */
+function okclayout_block_info() {
+  // This example comes from node.module.
+  $blocks['site-title'] = array(
+    'info' => t('[OKC Layout] Display site title'),
+    'cache' => DRUPAL_CACHE_GLOBAL,
+  );
+  $blocks['site-slogan'] = array(
+    'info' => t('[OKC Layout] Display site slogan'),
+    'cache' => DRUPAL_CACHE_GLOBAL,
+  );
+  $blocks['site-breadcrumb'] = array(
+    'info' => t('[OKC Layout] Display breadcrumb'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+  $blocks['site-messages'] = array(
+    'info' => t('[OKC Layout] Display site messages'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view()
+ * @param string $delta
+ * @return array
+ */
+function okclayout_block_view($delta = '') {
+  $block = array();
+  switch ($delta) {
+    case 'site-title':
+      $block['subject'] = t('[OKC Layout] Site title');
+      $block['content'] = variable_get('site_name');
+      break;
+    case 'site-slogan':
+      $block['subject'] = t('[OKC Layout] Site slogan');
+      $block['content'] = variable_get('site_slogan');
+      break;
+    case 'site-breadcrumb':
+      $block['subject'] = t('[OKC Layout] Breadcrumb');
+      $block['content'] = theme('breadcrumb', array('breadcrumb' => drupal_get_breadcrumb()));
+      break;
+    case 'site-messages':
+      $block['subject'] = t('[OKC Layout] Site messages');
+      $block['content'] = theme('status_messages');
+      break;
+  }
+  return $block;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function okclayout_class_permission() {
+  return array(
+    'administer block responsive classes' => array(
+      'title' => t('Administer block responsive classes'),
+      'description' => t('Set css zurb foundation classes for blocks.'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_form_alter()
+ */
+function okclayout_form_alter(&$form, &$form_state, $form_id) {
+  if (user_access('administer block responsive classes') && ($form_id == 'block_admin_configure' || $form_id == 'block_add_block_form')) {
+    $form['#submit'][] = 'okclayout_block_submit';
+    $block = block_load($form['module']['#value'], $form['delta']['#value']);
+    // add our configuration form, a simple textarea for now
+    okclayout_block_expert_form($form, $form_state, $block);
+  }
+}
+
+/**
+ * Configuration form to set zurb classes
+ */
+function okclayout_block_expert_form(&$form, &$form_state, $block) {
+  $form['settings']['okclayout_foundation_classes'] = array(
+    '#type' => 'textfield',
+    '#size' => 150,
+    '#autocomplete_path' =>  'okclayout/autocomplete/foundation-classes',
+    '#title' => t('Foundation classes'),
+    '#default_value' => isset($block->okclayout_foundation_classes) ? $block->okclayout_foundation_classes : '',
+    '#description' => t('Set css foundation grid classes for this block. example: <br/>
+      <strong>small-12 medium-8 large-12 columns</strong><br/>
+      These classes will be added to html block classes'
+    ),
+    '#weight' => -20,
+  );
+}
+
+/**
+ * Custom submit callback for configuration form : save configuration
+ * in  blocks table.
+ * @param $form
+ * @param $form_state
+ */
+function okclayout_block_submit($form, $form_state) {
+  $classes = $form_state['values']['okclayout_foundation_classes'];
+  db_update('block')
+    ->fields(array('okclayout_foundation_classes' => $classes))
+    ->condition('module', $form_state['values']['module'])
+    ->condition('delta', $form_state['values']['delta'])
+    ->execute();
+  // Flush all context module cache to use the updated okclayout_foundation_classes.
+  if (module_exists('context')) {
+    cache_clear_all('context', 'cache', TRUE);
+  }
+}
+
+/**
+ * Get responsive blocks information in theme info file (if any)
+ * @return array if responsive_blocks key is found, null otherwise
+ */
+function okclayout_get_block_classes_from_info_file() {
+
+  static $okclayout_foundation_classes = array();
+  if ($okclayout_foundation_classes) return $okclayout_foundation_classes;
+
+  $themes = list_themes();
+  $theme = $themes[$GLOBALS['theme']];
+  if (isset($theme->info['okclayout_block_classes'])) {
+    $okclayout_foundation_classes = $theme->info['okclayout_block_classes'];
+  }
+  return $okclayout_foundation_classes;
+
+}
+
+function okclayout_get_block_classes($block) {
+  $classes = NULL;
+
+  // if responsive classes have been found in database. Database win
+  // over theme info files.
+  if (isset($block->okclayout_foundation_classes) && trim($block->okclayout_foundation_classes) != '') {
+    $classes = $block->okclayout_foundation_classes;
+  }
+
+  // else, look for informations for this blocks in theme info files
+  else {
+    $okclayout_foundation_classes = okclayout_get_block_classes_from_info_file();
+    if (!empty($okclayout_foundation_classes["$block->module-$block->delta"])) {
+      $classes = $okclayout_foundation_classes["$block->module-$block->delta"];
+    }
+  }
+
+  return $classes;
+}
+
+/**
+ * Implements theme_preprocess_block().
+ *
+ * Extend block's classes with any user defined responsive classes.
+ */
+function okclayout_preprocess_block(&$vars) {
+  if ($classes = okclayout_get_block_classes($vars['block'])) {
+    $vars['classes_array'] = array_merge($vars['classes_array'], array_filter(explode(' ', $classes)));
+  }
+}
+
+/**
+ * Get layouts for a theme.
+ * Layouts are simply drupal sub theme for current theme, with a okclayout = TRUE
+ * in info file.
+ *
+ * A layout MUST implements a hook_okclayout_condition() that will return TRUE
+ * if this layout should be active.
+ *
+ * In others words, with switch theme on the fly, if theme is matching condition.
+ *
+ * @param $base_theme : machine name of base theme.
+ * @return mixed
+ */
+function okclayout_get_layouts($base_theme) {
+  static $layouts = array();
+  if ($layouts) return $layouts;
+  $themes = list_themes();
+  foreach ($themes as $theme_name => $theme) {
+    if (!empty($theme->info['okclayout']) && (isset($theme->info['base theme']) && $theme->info['base theme'] == $base_theme)) {
+      $layouts[$theme_name] = $theme;
+    }
+  }
+  return $layouts;
+}
+
+/**
+ * autocomplete helper
+ * $string = string for search
+ */
+function _okclayout_autocomplete_foundation_classes($string) {
+  $classes = array(
+    'small-12 columns' => 'small-12 columns (12 width on all screens)',
+    'small-12 large-6 columns' => 'small-12 large-6 columns (12 on small screens, 6 on medium and large screens)',
+    'small-12 large-8 columns' => 'small-12 large-8 columns (12 on small screens, 8 on medium and large screens)',
+    'small-12 large-4 columns' => 'small-12 large-4 columns (12 on small screens, 4 on medium and large screens)',
+    'small-12 medium-6 large-6 columns' => 'small-12 medium-6 large-3 columns (12 on small screens, 6 on medium screens and 3 on large screens)',
+    'small-3 small-centered columns' => 'small-3 small-centered (3 width centered on small screens)',
+    'small-9 small-centered large-uncentered columns' => 'small-9 small-centered large-uncentered columns (9 width centered only on small screens)',
+    'small-12 medium-push-6 columns' => 'small-6 medium-push-6 columns (move to the 6th columns to the right on mediums screens)',
+    'small-12 medium-pull-6 columns' => 'small-6 medium-push-6 columns (move to the 6th columns to the left on mediums screens)',
+  );
+  $matches = array();
+  foreach ($classes as $class => $help) {
+    if (strpos($class, $string) !== FALSE) {
+      $matches[$class] = $help;
+    }
+  }
+
+  // Return the result to the form in json
+  drupal_json_output($matches);
+}
