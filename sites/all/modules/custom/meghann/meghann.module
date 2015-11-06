@@ -4,7 +4,8 @@
  * Implements hook_init()
  */
 function meghann_init() {
-  // importation des fichiers css et js pour le slider "slick"
+  // importation des fichiers css et js pour le slider responsive "slick"
+  // utilisé pour la page d'accueil
   drupal_add_css('sites/all/libraries/slick/slick/slick.css');
   drupal_add_css('sites/all/libraries/slick/slick/slick-theme.css');
   drupal_add_js('sites/all/libraries/slick/slick/slick.min.js');
@@ -14,20 +15,22 @@ function meghann_init() {
  * Retourne tous les nids des nodes slides associé au slider avec le
  * nid passé en paramètre
  * @param $nid : nid du slider dont on veut retrouver les slides
+ * @return array de nids
  */
 function get_slides_from_slider($nid) {
 
   $query = db_select('node', 'n');
   $query->addField('n', 'nid');
-  $query->join('field_data_field_slider', 'field_data_field_slider', 'n.nid=entity_id');
-  //$query->addTag('node_access');
-  //$query->condition('status', 1);
+  $query->join('field_data_field_slider', 'field_data_field_slider', 'n.nid=field_data_field_slider.entity_id');
+  $query->leftJoin('draggableviews_structure', 'draggableviews_structure', 'n.nid=draggableviews_structure.entity_id');
+  $query->addTag('node_access');
+  $query->condition('status', 1);
   $query->condition('type', 'slide');
   if ($nid) {
     $query->condition('field_data_field_slider.field_slider_target_id', $nid);
   }
-  //$query->orderBy('created', 'DESC');
-  //$query->groupBy('n.nid');
+  $query->orderBy('draggableviews_structure.weight', 'ASC');
+  $query->groupBy('n.nid');
   $result = $query->execute();
   $nids = array();
   foreach ($result as $row) {

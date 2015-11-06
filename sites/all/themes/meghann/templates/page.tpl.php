@@ -124,13 +124,15 @@
 </header>
 
 <?php if ($breadcrumb): ?>
+  <!--
   <div id="breadcrumb">
     <div class="row">
       <div class="columns">
-        <?php print $breadcrumb ?>
+        <?php //print $breadcrumb ?>
       </div>
     </div>
-  </div> <!-- /.row -->
+  </div> -->
+  <!-- /.row -->
 <?php endif ?>
 
 
